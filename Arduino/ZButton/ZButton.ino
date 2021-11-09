@@ -3,7 +3,7 @@
 #include <FS.h>
 #include <ArduinoJson.h>
 
-#define USER_AGENT      "Z-Button/1.0.0"
+#define USER_AGENT      "Z-Button/1.1.0"
 #define CONFIG_TIMEOUT  3000
 #define CONFIG_FILE     "/cfg-v001.txt"
 #define CONFIG_BUFFER   512
@@ -24,10 +24,11 @@ struct Config {
 // Declarations
 
 Config config;
-bool configMode = false;
 byte mac[6];
 unsigned long hwid = ESP.getChipId();
 Pushbutton buttonStop(D5, PULL_UP_ENABLED, DEFAULT_STATE_LOW);
+Pushbutton buttonYellow(D6, PULL_UP_ENABLED, DEFAULT_STATE_HIGH);
+Pushbutton buttonGreen(D7, PULL_UP_ENABLED, DEFAULT_STATE_HIGH);
 BearSSL::WiFiClientSecure client;
 StaticJsonDocument<CONFIG_BUFFER> cfgJson;
 
@@ -41,30 +42,29 @@ void setup() {
   // Print welcome banner
   WiFi.macAddress(mac);
   Serial.printf("[=] Version=%s\n[=] MAC=%02X:%02X:%02X:%02X:%02X:%02X\n[=] HWID=%i\n",
-    USER_AGENT, 
-    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
-    hwid);
+                USER_AGENT,
+                mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
+                hwid);
 
   // Initialize SPIFFS
   if (!SPIFFS.begin()) {
     Serial.println("[x] Error initializing SPIFFS. System halted.");
     while (true);
   }
-  
+
   // Load configuration
   loadConfigFromFile();
   Serial.printf("[=] ClientId=%s\n", config.ClientId);
 
-  // Start config mode timeout if not already in it
-  if (!configMode) {
-    Serial.println("[i] You can enter configuration mode now.");
-    unsigned long configModeTimeout = millis() + CONFIG_TIMEOUT;
-    while (millis() < configModeTimeout) {
-      if (Serial.available()) {
-        char c = Serial.read();
-        configMode = true;
-        break;
-      }
+  // Start config mode timeout
+  Serial.println("[i] You can enter configuration mode now.");
+  unsigned long configModeTimeout = millis() + CONFIG_TIMEOUT;
+  bool configMode = false;
+  while (millis() < configModeTimeout) {
+    if (Serial.available()) {
+      char c = Serial.read();
+      configMode = true;
+      break;
     }
   }
 
@@ -80,15 +80,13 @@ void setup() {
 }
 
 void loop() {
-  if (configMode) {
-    // Configuration mode
-  } else {
-    // Keep connected to WiFi
-    ensureWiFiConnected();
+  // Keep connected to WiFi
+  ensureWiFiConnected();
 
-    // Check button state
-    if (buttonStop.getSingleDebouncedPress()) notifyEvent("BUTTON_STOP", "PRESS");
-  }
+  // Check button state
+  if (buttonStop.getSingleDebouncedPress()) notifyEvent("BUTTON_STOP", "PRESS");
+  if (buttonYellow.getSingleDebouncedPress()) notifyEvent("BUTTON_YELLOW", "PRESS");
+  if (buttonGreen.getSingleDebouncedPress()) notifyEvent("BUTTON_GREEN", "PRESS");
 }
 
 // Functional methods
