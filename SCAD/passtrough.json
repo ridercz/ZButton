@@ -1,0 +1,18 @@
+{
+    "parameterSets": {
+        "Schneider Electric Harmony XAL": {
+            "$fudge": "1",
+            "cable_diameter": "5",
+            "nut_flat_distance": "27",
+            "nut_height": "3",
+            "nut_spacing": "4",
+            "print_distance": "2",
+            "print_tolerance": "0.25",
+            "split_inner": "true",
+            "thread_diameter": "20",
+            "washer_diameter": "30",
+            "washer_thickness": "2"
+        }
+    },
+    "fileFormatVersion": "1"
+}

@@ -1,6 +1,6 @@
 /******************************************************************************
- * Passtrough module for Schneider Electric Harmony XAL housings
- * Version 1.0 (2021-10-25)
+ * Passtrough module for button housings
+ * Version 1.1 (2021-11-04)
  * ----------------------------------------------------------------------------
  * Copyright (c) Michal A. Valasek, 2021 | www.rider.cz | www.altair.blog
  *               Licensed under terms of the MIT license
@@ -15,7 +15,7 @@ thread_diameter = 20;
 // Outer diameter of cable going trough
 cable_diameter = 5;
 // Maximum outer diameter
-washer_diameter = 30;
+washer_diameter = 29;
 // Thickness of circular washer part
 washer_thickness = 2;
 // Height of outer nut (without integrated washer)
